@@ -1,5 +1,5 @@
-let canvas = document.getElementById('spring-pendulum')
-let ctx = canvas.getContext('2d');
+const canvas = document.getElementById('spring-pendulum')
+const ctx = canvas.getContext('2d');
 
 const clientWidth = 240
 const clientHeight = 320
@@ -10,12 +10,12 @@ canvas.height = clientHeight
 const widthDraw = 100
 let marginTop = 15
 
-//Parameters
+// Parameters
 const elemWeight = document.getElementById('m')
 const elemRigidity = document.getElementById('k')
 const elemDeviation = document.getElementById('x0')
 
-//Characteristics
+// Characteristics
 const elemW0 = document.getElementById('w0')
 const elemX = document.getElementById('x')
 const elemT = document.getElementById('t')
@@ -33,7 +33,7 @@ function startAnimation() {
   elemRigidity.disabled = true;
   elemDeviation.disabled = true;
 
-  fps.start();
+  animation.start();
 }
 
 function stopAnimation() {
@@ -45,9 +45,10 @@ function stopAnimation() {
   elemRigidity.disabled = false;
   elemDeviation.disabled = false;
 
-  fps.stop();
+  animation.stop();
 }
 
+// Default values
 let params = {
   m: Number(elemWeight.value),
   k: Number(elemRigidity.value),
@@ -63,22 +64,18 @@ let characteristics = {
 
 characteristics.w0 = calcW0(params.k, params.m)
 
-function calcW0(k, m) {
-  const w0 = roundUpTo(Math.sqrt(k / m), 3)
-  characteristics.w0 = w0
-  elemW0.innerText = characteristics.w0
-  return w0;
-}
-
 elemWeight.addEventListener('change', onChangeField)
 elemRigidity.addEventListener('change', onChangeField)
 elemDeviation.addEventListener('change', onChangeField)
 
-let checkFull = false;
-let fps = new FpsCtrl(60, function (e) {
-  characteristics.x = params.x0 * Math.cos(characteristics.w0 * characteristics.time)
+// First draw with default parameters
+drawPendulum(widthDraw, marginTop, params.x0)
 
+let checkFull = false;
+let animation = new FpsCtrl(60, function (e) {
+  characteristics.x = params.x0 * Math.cos(characteristics.w0 * characteristics.time)
   elemX.innerText = roundUpTo(characteristics.x, 2)
+
   if (checkFull) {
     if (Math.round(characteristics.x) === params.x0) {
       characteristics.quantity += 1
@@ -92,51 +89,33 @@ let fps = new FpsCtrl(60, function (e) {
   }
 
   elemT.innerText = `${roundUpTo(characteristics.time, 2)}c`
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  ctx.clearRect(0, 0, clientWidth, clientHeight)
   drawPendulum(widthDraw, marginTop, characteristics.x)
 })
 
-drawPendulum(widthDraw, marginTop, params.x0)
-
-function onChangeField(event) {
-  resetCharacteristics()
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  params[event.target.dataset.field] = Number(event.target.value)
-  const {k, m} = params;
-  calcW0(k, m)
-  drawPendulum(widthDraw, marginTop, params.x0)
-}
-
-function roundUpTo(num, afterPoint) {
-  const p = Math.pow(10, afterPoint)
-  return Math.round(num * p) / p
-}
-
-function drawPendulum(widthLine, marginTop, x) {
-  const halfWidthLine = widthLine / 2;
+// Draw a spring pendulum according to the parameters
+function drawPendulum(widthDraw, marginTop, x) {
+  const halfWidthDraw = widthDraw / 2;
   const centerCanvas = clientWidth / 2;
-
-  const startPositionX = centerCanvas - halfWidthLine;
-  const endPositionX = centerCanvas + halfWidthLine;
-
-  drawLine(startPositionX, marginTop, endPositionX, marginTop)
-
+  const startPositionX = centerCanvas - halfWidthDraw;
+  const endPositionX = centerCanvas + halfWidthDraw;
   const heightVerticalLineCenter = 10
   const endLineCenterY = marginTop + heightVerticalLineCenter
-
-  drawLine(centerCanvas, marginTop, centerCanvas, endLineCenterY)
-
   const columnsAmount = 20
   const heightColumn = 10
-  const inlineColumn = 4
+  const inclineColumn = 4
   const lineWeight = 1
-  const lengthBetweenColumn = widthLine / columnsAmount
+  const lengthBetweenColumns = widthDraw / columnsAmount
+
+  drawLine(startPositionX, marginTop, endPositionX, marginTop)
+  drawLine(centerCanvas, marginTop, centerCanvas, endLineCenterY)
 
   for (let i = 0; i < columnsAmount; i++) {
     drawLine(
-      startPositionX + i * lengthBetweenColumn,
+      startPositionX + i * lengthBetweenColumns,
       marginTop,
-      startPositionX + i * lengthBetweenColumn + inlineColumn,
+      startPositionX + i * lengthBetweenColumns + inclineColumn,
       marginTop - heightColumn,
       lineWeight
     )
@@ -168,6 +147,7 @@ function drawPendulum(widthLine, marginTop, x) {
   drawCircle(centerCanvas, savePosY, Math.cbrt(params.m) * 12, 0, 2 * Math.PI)
 }
 
+// Primitives for canvas
 function drawCircle(x, y, radius, startAngle, endAngle, anticlockwise) {
   ctx.beginPath();
   ctx.arc(x, y, radius, startAngle, endAngle, anticlockwise);
@@ -182,6 +162,7 @@ function drawLine(startX, startY, endX, endY, lineWidth = 2) {
   ctx.stroke()
 }
 
+// Constructor for requestAnimationFrame with fps
 function FpsCtrl(fps, callback) {
   let delay = 1000 / fps,
     time = null,
@@ -223,6 +204,16 @@ function FpsCtrl(fps, callback) {
   };
 }
 
+// Record new values when changed parameters
+function onChangeField(event) {
+  resetCharacteristics()
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  params[event.target.dataset.field] = Number(event.target.value)
+  const {k, m} = params;
+  calcW0(k, m)
+  drawPendulum(widthDraw, marginTop, params.x0)
+}
+
 function resetCharacteristics() {
   characteristics = {
     ...characteristics,
@@ -231,11 +222,26 @@ function resetCharacteristics() {
     quantity: 0
   }
 
-  elemX.innerText = characteristics.x
-  elemT.innerText = characteristics.time
-  elemQ.innerText = characteristics.quantity
+  const {x, time, quantity} = characteristics
+
+  elemX.innerText = x
+  elemT.innerText = time
+  elemQ.innerText = quantity
 
   checkFull = false
+}
+
+function calcW0(k, m) {
+  const w0 = roundUpTo(Math.sqrt(k / m), 3)
+  characteristics.w0 = w0
+  elemW0.innerText = characteristics.w0
+  return w0;
+}
+
+// Rounding to a specific decimal place
+function roundUpTo(num, afterPoint) {
+  const p = Math.pow(10, afterPoint)
+  return Math.round(num * p) / p
 }
 
 

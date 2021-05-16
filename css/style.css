@@ -4,7 +4,15 @@
 }
 
 input {
+  padding: 4px;
+  font-size: 14px;
   width: 50px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
 }
 
 #spring-pendulum {
@@ -25,6 +33,7 @@ input {
   margin: 5px;
   min-width: 240px;
   padding: 16px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .visual {
@@ -39,11 +48,30 @@ input {
 .params {
   display: grid;
   grid-template-columns: 1fr;
+  align-items: center;
 }
 
 .characteristics {
+  display: grid;
+  align-items: center;
+}
 
+.characteristic {
+  font-weight: bold;
 }
 
 .wrap-param {
+}
+
+.btn-toggle-animation {
+  padding: 12px 24px;
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid #000000;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.btn-toggle-animation:hover {
+  background: #efefef;
 }

@@ -17,35 +17,39 @@
   <div class="container-params">
     <div class="params">
       <div class="wrap-param">
+        <label for="m">Масса (m)</label>
         <input id="m" type="number" data-field="m" min="0.5"
                max="1" step="0.1"
                value="0.5">
-        <label for="m">кг Масса (m)</label>
+        <span>кг</span>
       </div>
       <div class="wrap-param">
+        <label for="k">Жесткость пружины (k)</label>
         <input id="k" type="number" data-field="k" min="5"
                max="9" step="1" value="5">
-        <label for="k">Н/м Жесткость пружины (k)</label>
+        <span>Н/м</span>
       </div>
       <div class="wrap-param">
+        <label for="x0">Первоначальное отклонение от равновесия (x0)</label>
         <input id="x0" type="number" data-field="x0" min="0"
                max="20" step="2"
                value="10">
-        <label for="x0">см Первоначальное отклонение (x0)</label>
+        <span>см</span>
       </div>
     </div>
     <div class="characteristics">
       <div class="wrap-param">
-        ω0: <span id="w0"></span>
+        <span class="characteristic">ω0:</span> <span id="w0"></span>
       </div>
       <div class="wrap-param">
-        Время: <span id="t"></span>
+        <span class="characteristic">Время:</span> <span id="t"></span>
       </div>
       <div class="wrap-param">
-        Кол. полных колебаний: <span id="q"></span>
+        <span class="characteristic">Кол. полных колебаний:</span> <span
+        id="q"></span>
       </div>
       <div class="wrap-param">
-       x: <span id="x"></span>
+        <span class="characteristic">x:</span> <span id="x"></span>
       </div>
     </div>
   </div>
